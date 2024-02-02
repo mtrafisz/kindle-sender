@@ -23,6 +23,10 @@ mail_user = os.getenv("MAIL_USER")
 mail_password = os.getenv("MAIL_APP_PASSWORD")
 mail_host = os.getenv("MAIL_HOST")
 
+default_destination_user = os.getenv("DEFAULT_DESTINATION_USER")
+if default_destination_user == None:
+    default_destination_user = ""
+
 if mail_user == None or mail_password == None or mail_host == None:
     tk.messagebox.showerror("Environment variables missing", "Please set the MAIL_USER, MAIL_APP_PASSWORD, and MAIL_HOST environment variables.")
     exit()
@@ -81,6 +85,7 @@ sendToLabel.grid(row=2, column=0, sticky="w", padx=10, pady=10)
 
 sendToInput = ctk.CTkEntry(app)
 sendToInput.grid(row=2, column=1, columnspan=2, padx=10, pady=10, sticky="ew")
+sendToInput.insert(0, default_destination_user)
 
 sendButton = ctk.CTkButton(app, text="Send")
 sendButton.grid(row=3, column=0, columnspan=3, padx=10, pady=10, sticky="ew")
@@ -100,6 +105,8 @@ browseButton.configure(command=browse)
 # send button: moves string from input field to variable, verifies that it's a valid email, then sends the files
 def send():
     global destination_user
+    global files
+    
     destination_user = sendToInput.get()
     if "@" not in destination_user:
         tk.messagebox.showerror("Invalid email", "Please enter a valid email address.")
@@ -146,6 +153,12 @@ def send():
     try:
         server.sendmail(mail_user, destination_user, msg.as_string())
         tk.messagebox.showinfo("Success", "Files sent successfully.")
+
+        # clear input fields and listbox
+        sendToInput.delete(0, tk.END)
+        flieList.delete(0, tk.END)
+        files = []
+
     except Exception as e:
         tk.messagebox.showerror("Error", "An error occurred: " + str(e))
 
