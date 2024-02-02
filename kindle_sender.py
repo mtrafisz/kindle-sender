@@ -5,7 +5,7 @@ import os # also for some mail stuff
 import tkinter as tk
 import tkinter.filedialog as fd
 import customtkinter as ctk
-import sv_ttk  # color theme
+import sv_ttk  # color theme (doesn't change mutch, but it's a bit better than the default)
 # email stuff:
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -36,8 +36,6 @@ app = ctk.CTk()
 app.title("Kindle Sender")
 app.geometry("300x400")
 app.resizable(False, False)
-
-# get icon from book.ico
 app.iconbitmap("resources/book.ico")
 
 # Set up server
@@ -45,11 +43,9 @@ try:
     server = smtplib.SMTP_SSL(mail_host, 465)
     if server.ehlo()[0] != 250:
         server.quit()
-        # error message box
         tk.messagebox.showerror("Server connection failed", "Server connection failed. Please check your internet connection.")
         exit()
 except Exception as e:
-    # error message box
     tk.messagebox.showerror("Server connection failed", "Server connection failed. Reason: " + str(e))
     exit()
 
@@ -57,7 +53,6 @@ try:
     server.login(mail_user, mail_password)
 except Exception as e:
     server.quit()
-    # error message box
     tk.messagebox.showerror("Login failed", "Login failed. Reason: " + str(e))
     exit()
 
@@ -126,10 +121,13 @@ def send():
     msg['Subject'] = 'Kindle file transfer'
     
     # Attach and send files
+
+    # kindle supported formats
+    supported_extensions = [".pdf", ".doc", ".docx", ".htm", ".html", ".rtf", ".txt", ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".epub"]
+
     file_count = 0
     for file in files:
-        # skip .py and .exe files
-        if file.endswith(".py") or file.endswith(".exe"):
+        if not any(file.endswith(ext) for ext in supported_extensions):
             continue
         file_count += 1
 
