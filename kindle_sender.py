@@ -153,7 +153,6 @@ def send():
         tk.messagebox.showinfo("Success", "Files sent successfully.")
 
         # clear input fields and listbox
-        sendToInput.delete(0, tk.END)
         flieList.delete(0, tk.END)
         files = []
 
@@ -162,7 +161,7 @@ def send():
 
 sendButton.configure(command=send)
 
-# listbox: click on element twice to remove it from the list variable and the listbox
+# listbox: right click on element to remove it from the list variable and the listbox
 def removeFile(event):
     global files
     selected = flieList.curselection()
@@ -172,9 +171,17 @@ def removeFile(event):
     for file in files:
         flieList.insert(tk.END, file.split("/")[-1])
 
-flieList.bind("<Double-Button-1>", removeFile)
+# Right click to remove file
+flieList.bind("<Button-3>", removeFile)
 
 sv_ttk.set_theme("dark")
+
+# on quit:
+def on_closing():
+    server.quit()
+    app.destroy()
+
+app.protocol("WM_DELETE_WINDOW", on_closing)
 
 # run the app
 app.mainloop()
